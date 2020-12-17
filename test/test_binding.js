@@ -30,7 +30,7 @@ function testInit() {
     console.log("(S/N: %s @ %s)", serial, path);
     let handle = NSDSP.Connect(serial);
     assert.ok(handle, "Connect failed: invalid handle received");
-    int_handle = handle.length >=6 ? handle.readBigUInt64LE(0) : handle.readUInt(0, handle.length);
+    int_handle = handle.length >=6 ? handle.readBigUInt64LE(0) : handle.readUIntLE(0, handle.length);
     console.log("\nReceived valid device handle:", int_handle);
 
     console.log("Comparing S/N..");
@@ -90,7 +90,7 @@ function testInit() {
     
     console.log("\nDisconnecting..");
     result = NSDSP.Disconnect(handle);
-    assert.strictEqual(result, undefined, "Disconnect failed");
+    assert.strictEqual(result, null, "Disconnect failed");
     console.log("Successfully disconnected from device");
 }
 

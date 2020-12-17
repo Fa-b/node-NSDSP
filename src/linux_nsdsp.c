@@ -21,7 +21,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
 #include <pthread.h>
 #include <sys/select.h>
 #include <sys/ioctl.h>
@@ -230,7 +230,7 @@ void ProcessIncoming(NSDSP_CONN_HANDLE Conn, unsigned char *B) {
 }
 
 void *ReaderThreadProc(NSDSP_CONN_HANDLE Conn) {
-  char RBuf[NSDSP_INPUT_SIZE];
+  unsigned char RBuf[NSDSP_INPUT_SIZE];
   
   FlushHIDQueue(Conn->hDev);
   
@@ -326,7 +326,7 @@ NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPConnect(char *Serial) {
   return Conn;
 }
 
-NSDSP_EXPORT(void) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
+NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
   Conn->Killing = 1;
   pthread_cancel(Conn->ThreadIn);
   pthread_join(Conn->ThreadIn,NULL);
@@ -338,6 +338,7 @@ NSDSP_EXPORT(void) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
   pthread_cond_destroy(&Conn->WriteState);
   close(Conn->hDev);
   free(Conn);
+  return NULL;
 }
 
 NSDSP_EXPORT(char*) NSDSPGetSerial(NSDSP_CONN_HANDLE Conn) {
@@ -413,7 +414,6 @@ NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, int Timeout) {
 }
 
 NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
-  char Ch;
   while (Size--) {
     if ((Conn->QPtr > NSDSP_REPORT_SIZE)&&!NSDSPFlush(Conn)) return 0;
   

@@ -45,7 +45,7 @@ Napi::Value Connect(const Napi::CallbackInfo & info) {
     }
     
     if(handle == nullptr)
-        return Napi::Value::Value();
+        return env.Null();
     
     return Napi::Buffer<NSDSP_CONN_HANDLE>::Copy(env, &handle, 1);
 }
@@ -67,7 +67,7 @@ Napi::Value Disconnect(const Napi::CallbackInfo & info) {
     NSDSP_CONN_HANDLE handle = *info[0].As<Napi::Buffer<NSDSP_CONN_HANDLE>>().Data();
     
     if(!NSDSPDisconnect(handle))
-        return Napi::Value::Value();
+        return env.Null();
         
     
     return info[0];

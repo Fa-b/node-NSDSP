@@ -39,7 +39,7 @@ Connect(serial?: string): Buffer
 
  - `serial`: the serial number of the NSDSP device. May be NULL. If NULL is specified and there is only one NSDSP device present, `Connect()` connects to this NSDSP device. If `NULL` is specified when multiple NSDSP devices are present, `Connect()` connects to the first NSDSP device on the enumeration list.
 
- - `returns`: the handle to the connection. It can be used in subsequent functions as needed. After use, it must be destroyed with `Disconnect()`.
+ - `returns`: the handle to the connection if successful, null otherwise. It can be used in subsequent functions as needed. After use, it must be destroyed with `Disconnect()`.
 
 Only one connection can be established to any specific NSDSP device
 at a time. If there are multiple NSDSP devices, you can establish
@@ -56,7 +56,7 @@ Disconnect(handle: Buffer): Buffer
 
  - `handle`: the connection handle returned by `Connect()`. After calling `Disconnect()`, the handle becomes invalid and can no longer be used.
 
- - `returns`: undefined if successful, the handle passed to this function otherwise.
+ - `returns`: null if successful, the handle passed to this function otherwise.
 
 All connections established with `Connect()` must be
 eventually destroyed by `Disconnect()`. This must be done
