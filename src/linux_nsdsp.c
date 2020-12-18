@@ -35,19 +35,19 @@ typedef struct NSDSP_CONN_DATA {
   // platform-independent part
   unsigned int Version;
   char Serial[MAX_NSDSP_SERIAL];
-  int Baud;
-  int FlowControl;
+  unsigned int Baud;
+  unsigned int FlowControl;
   unsigned int Timeout;
-  int SessionId;
-  int QCnt;
-  int QPtr;
+  unsigned int SessionId;
+  unsigned int QCnt;
+  unsigned int QPtr;
   char* QBufPtr;
   char QBuf1[NSDSP_REPORT_SIZE+4];
   char QBuf2[NSDSP_REPORT_SIZE+4];
   
-  int RRead;
-  int RWrite;
-  int RequestedData;  
+  unsigned int RRead;
+  unsigned int RWrite;
+  unsigned int RequestedData;  
   int Killing;
   int ExpectBarrier;
   char RBuf[NSDSP_INPUT_BUFFER_SIZE];
@@ -61,7 +61,7 @@ typedef struct NSDSP_CONN_DATA {
   
 } NSDSP_CONN_DATA;
 
-int ReadFileContent(char *FileName, char *Dst, int Size) {
+int ReadFileContent(char *FileName, char *Dst, unsigned int Size) {
   int f, n;
   f = open(FileName,O_RDONLY);
   if (f == -1) return 0;
@@ -207,7 +207,7 @@ void FlushHIDQueue(int h) {
 }
 
 void ProcessIncoming(NSDSP_CONN_HANDLE Conn, unsigned char *B) {
-  int i, L;
+  unsigned char i, L;
 
   if (Conn->ExpectBarrier) {
     if ((*B & 0x80) == 0) return;
@@ -377,7 +377,7 @@ NSDSP_EXPORT(int) NSDSPGetRX(NSDSP_CONN_HANDLE Conn) {
 
 NSDSP_EXPORT(int) NSDSPSetMode(NSDSP_CONN_HANDLE Conn, unsigned char *Mode) {
   unsigned char Feature[NSDSP_FEATURE_SIZE+1];
-  int Div;
+  unsigned int Div;
   
   Div = Mode[1] + Mode[2]*256 + 1;
   Conn->Baud = 12000000/Div;
@@ -409,11 +409,11 @@ NSDSP_EXPORT(int) NSDSPSetMode(NSDSP_CONN_HANDLE Conn, unsigned char *Mode) {
   return 1;
 }
 
-NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, int Timeout) {
+NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, unsigned int Timeout) {
   Conn->Timeout = Timeout;
 }
 
-NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
+NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, unsigned int Size) {
   while (Size--) {
     if ((Conn->QPtr > NSDSP_REPORT_SIZE)&&!NSDSPFlush(Conn)) return 0;
   
@@ -428,7 +428,7 @@ NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
   return 1;
 }
 
-NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src, int Size) {
+NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src, unsigned int Size) {
   if ((Conn->QPtr + Size) >= (Conn->QCnt + 0x40)) {
     if ((Conn->QPtr > NSDSP_REPORT_SIZE)&&!NSDSPFlush(Conn)) return 0;
   
@@ -443,7 +443,7 @@ NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src,
   return NSDSPWrite(Conn, Src, Size);
 }
 
-NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
+NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, unsigned int Size) {
   if (Size & 0x01) {
     if (!NSDSPWriteCommand(Conn, NSDSP_CMD_SPI_WRITE_1, Src++, 1)) return 0;
   }
@@ -462,7 +462,7 @@ NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
   return 1;
 }
 
-NSDSP_EXPORT(int) NSDSPDelay(NSDSP_CONN_HANDLE Conn, int Delay) {
+NSDSP_EXPORT(int) NSDSPDelay(NSDSP_CONN_HANDLE Conn, unsigned int Delay) {
   if (Delay < 1) return 0;
   if (Delay > 0x1000001) return 0;
   
@@ -545,11 +545,11 @@ NSDSP_EXPORT(int) NSDSPWaitForCompletion(NSDSP_CONN_HANDLE Conn) {
   return 1;
 }
 
-NSDSP_EXPORT(int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn) {
+NSDSP_EXPORT(unsigned int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn) {
   return (Conn->RWrite - Conn->RRead);
 }
 
-NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size) {
+NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, unsigned int Size) {
   struct timespec TS;
   int R;
 
@@ -563,7 +563,7 @@ NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size) {
   return (R == 0);
 }
 
-NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size) {
+NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, unsigned int Size) {
   int R;
 
   R = 0;
@@ -575,8 +575,8 @@ NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size) {
   return (R == 0);
 }
 
-NSDSP_EXPORT(int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, int Size) {
-  int RSize;
+NSDSP_EXPORT(unsigned int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, unsigned int Size) {
+  unsigned int RSize;
   
   RSize = 0;
   while ((RSize < Size)&&(NSDSPAvailableData(Conn) > 0)) {

@@ -33,19 +33,19 @@ typedef struct NSDSP_CONN_DATA {
   // platform-independent part
   unsigned int Version;
   char Serial[MAX_NSDSP_SERIAL];
-  int Baud;
-  int FlowControl;
+  unsigned int Baud;
+  unsigned int FlowControl;
   unsigned int Timeout;
-  int SessionId;
-  int QCnt;
-  int QPtr;
+  unsigned int SessionId;
+  unsigned int QCnt;
+  unsigned int QPtr;
   char* QBufPtr;
   char QBuf1[NSDSP_REPORT_SIZE+4];
   char QBuf2[NSDSP_REPORT_SIZE+4];
   
-  int RRead;
-  int RWrite;
-  int RequestedData;  
+  unsigned int RRead;
+  unsigned int RWrite;
+  unsigned int RequestedData;  
   int Killing;
   int ExpectBarrier;
   char RBuf[NSDSP_INPUT_BUFFER_SIZE];
@@ -63,7 +63,7 @@ typedef struct NSDSP_CONN_DATA {
 
 int SignalHookInstalled = 0;
 
-int GetCFString(CFStringRef Str, char *Dst, int Size) {
+int GetCFString(CFStringRef Str, char *Dst, unsigned int Size) {
   return CFStringGetCString(Str, Dst, Size, kCFStringEncodingUTF8);
 }
 
@@ -181,7 +181,7 @@ NSDSP_EXPORT(int) NSDSPEnumerate(NSDSP_ENUM_DATA *Dev) {
 }
 
 void ProcessIncoming(NSDSP_CONN_HANDLE Conn, unsigned char *B) {
-  int i, L;
+  unsigned char i, L;
 
   if (Conn->ExpectBarrier) {
     if ((*B & 0x80) == 0) return;
@@ -311,7 +311,7 @@ NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPConnect(char *Serial) {
   if (!Conn->DevRef) {
     DestroyManager(Conn->MgrRef);
     free(Conn);
-    return 0;
+    return NULL;
   }
   
   Conn->QCnt = 1;
@@ -328,7 +328,7 @@ NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPConnect(char *Serial) {
   return Conn;
 }
 
-NSDSP_EXPORT(void) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
+NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
   Conn->Killing = 1;
 
   while (Conn->RunLoop == 0) sleep(1);
@@ -348,6 +348,7 @@ NSDSP_EXPORT(void) NSDSPDisconnect(NSDSP_CONN_HANDLE Conn) {
   DestroyManager(Conn->MgrRef);
 
   free(Conn);
+  return NULL
 }
 
 NSDSP_EXPORT(char*) NSDSPGetSerial(NSDSP_CONN_HANDLE Conn) {
@@ -391,7 +392,7 @@ NSDSP_EXPORT(int) NSDSPGetRX(NSDSP_CONN_HANDLE Conn) {
 NSDSP_EXPORT(int) NSDSPSetMode(NSDSP_CONN_HANDLE Conn, unsigned char *Mode) {
   unsigned char Feature[NSDSP_FEATURE_SIZE];
   CFIndex Size;
-  int Div;
+  unsigned int Div;
   
   Div = Mode[1] + Mode[2]*256 + 1;
   Conn->Baud = 12000000/Div;
@@ -425,12 +426,11 @@ NSDSP_EXPORT(int) NSDSPSetMode(NSDSP_CONN_HANDLE Conn, unsigned char *Mode) {
   return 1;
 }
 
-NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, int Timeout) {
+NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, unsigned int Timeout) {
   Conn->Timeout = Timeout;
 }
 
-NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size) {
-  char Ch;
+NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, unsigned int Size) {
   while (Size--) {
     if ((Conn->QPtr > NSDSP_REPORT_SIZE)&&!NSDSPFlush(Conn)) return 0;
   
@@ -564,11 +564,11 @@ NSDSP_EXPORT(int) NSDSPWaitForCompletion(NSDSP_CONN_HANDLE Conn) {
   return 1;
 }
 
-NSDSP_EXPORT(int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn) {
+NSDSP_EXPORT(unsigned int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn) {
   return (Conn->RWrite - Conn->RRead);
 }
 
-NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size) {
+NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, unsigned int Size) {
   struct timespec TS;
   int R;
 
@@ -582,7 +582,7 @@ NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size) {
   return (R == 0);
 }
 
-NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size) {
+NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, unsigned int Size) {
   int R;
 
   R = 0;
@@ -594,8 +594,8 @@ NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size) {
   return (R == 0);
 }
 
-NSDSP_EXPORT(int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, int Size) {
-  int RSize;
+NSDSP_EXPORT(unsigned int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, unsigned int Size) {
+  unsigned int RSize;
   
   RSize = 0;
   while ((RSize < Size)&&(NSDSPAvailableData(Conn) > 0)) {

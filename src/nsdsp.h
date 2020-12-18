@@ -25,7 +25,7 @@
 // the calling conventions
 // Such definition must precede #include "nsuart.h"
 #ifndef NSDSP_EXPORT
-    #define NSDSP_EXPORT(RET) RET
+  #define NSDSP_EXPORT(RET) RET
 #endif
 
 #define MAX_NSDSP_DEVICES   32
@@ -318,7 +318,8 @@ NSDSP_EXPORT(NSDSP_CONN_HANDLE) NSDSPConnect(char *Serial);
 //           After calling NSDSPDisconnect(), the handle
 //           becomes invalid and can no longer be used.
 //
-// Return    none
+// Return    NULL if successful, the handle passed to this function
+//           otherwise.
 //
 // All connections established with NSDSPConnect() must be
 // eventually destroyed by NSDSPDisconnet(). This must be done
@@ -462,7 +463,7 @@ NSDSP_EXPORT(int) NSDSPSetMode(NSDSP_CONN_HANDLE Conn, unsigned char *Mode);
 // malfunction (for example if microcontroller holds the CTS
 // line for too long) and should work in most cases.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, int Timeout);
+NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, unsigned int Timeout);
 
 // -------------------------------------------------------------------
 // NSDSPWrite - writes data to the outgoing buffer
@@ -496,7 +497,7 @@ NSDSP_EXPORT(void) NSDSPSetTimeout(NSDSP_CONN_HANDLE Conn, int Timeout);
 // to make sure that the data pending in the buffer gets sent
 // to NSDSP.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size);
+NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, unsigned int Size);
 
 // -------------------------------------------------------------------
 // NSDSPWriteCommand - writes command to the outgoing buffer
@@ -517,7 +518,7 @@ NSDSP_EXPORT(int) NSDSPWrite(NSDSP_CONN_HANDLE Conn, char *Src, int Size);
 // different buffers, which is absolutely necessary for successful
 // command execution.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src, int Size);
+NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src, unsigned int Size);
 
 // -------------------------------------------------------------------
 // NSDSPWriteSPI - writes SPI write commands to the outgoing buffer
@@ -534,7 +535,7 @@ NSDSP_EXPORT(int) NSDSPWriteCommand(NSDSP_CONN_HANDLE Conn, char Cmd, char *Src,
 // into the output buffer. It selects the fastest commands to
 // transmit the supplied data with SPI through ICSPCLK and ICSPCLK pins
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, int Size);
+NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, unsigned int Size);
 
 // -------------------------------------------------------------------
 // NSDSPDelay - writes delay commands to the outgoing buffer
@@ -551,7 +552,7 @@ NSDSP_EXPORT(int) NSDSPWriteSPI(NSDSP_CONN_HANDLE Conn, char *Src, int Size);
 // executes them after the delay. Note that if you keep transmitting
 // commands during a long delay, your trasactions may time out.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPDelay(NSDSP_CONN_HANDLE Conn, int Delay);
+NSDSP_EXPORT(int) NSDSPDelay(NSDSP_CONN_HANDLE Conn, unsigned int Delay);
 
 // -------------------------------------------------------------------
 // NSDSPFlush - sends pendng data
@@ -620,7 +621,7 @@ NSDSP_EXPORT(int) NSDSPWaitForCompletion(NSDSP_CONN_HANDLE Conn);
 // The NSDSPAvailableData() function can be used to find out
 // how much data is currently stored in the input buffer.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn);
+NSDSP_EXPORT(unsigned int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn);
 
 // -------------------------------------------------------------------
 // NSDSPWaitForData - waits until the requested amount of data becomes
@@ -639,7 +640,7 @@ NSDSP_EXPORT(int) NSDSPAvailableData(NSDSP_CONN_HANDLE Conn);
 // automatically set by NSDSPSetMode() and can be changed by
 // NSDSPSetTimeout().
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size);
+NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, unsigned int Size);
 
 // -------------------------------------------------------------------
 // NSDSPWaitForDataForever - waits until the requested amount of data
@@ -657,7 +658,7 @@ NSDSP_EXPORT(int) NSDSPWaitForData(NSDSP_CONN_HANDLE Conn, int Size);
 // becomes available. This function never times out, but can return
 // prematurely if there is any error, such as USB malfunction.
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size);
+NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, unsigned int Size);
 
 // -------------------------------------------------------------------
 // NSDSPRead - retrieves data from the input buffer
@@ -681,6 +682,6 @@ NSDSP_EXPORT(int) NSDSPWaitForDataForever(NSDSP_CONN_HANDLE Conn, int Size);
 // then NSDSPWaitForData() or NSDSPWaitForDataForever() may be used.
 // Alternatively, you can poll NSDSPAvailableData().
 // -------------------------------------------------------------------
-NSDSP_EXPORT(int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, int Size);
+NSDSP_EXPORT(unsigned int) NSDSPRead(NSDSP_CONN_HANDLE Conn, char *Dst, unsigned int Size);
 
 #endif // defined NSDSP_H
