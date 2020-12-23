@@ -513,7 +513,6 @@ Napi::Value Read(const Napi::CallbackInfo & info) {
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
-    //EnumData::Init(env, exports);
     exports.Set(Napi::String::New(env, "NSDSPEnumerate"), Napi::Function::New(env, Enumerate));
     exports.Set(Napi::String::New(env, "NSDSPConnect"), Napi::Function::New(env, Connect));
     exports.Set(Napi::String::New(env, "NSDSPDisconnect"), Napi::Function::New(env, Disconnect));
