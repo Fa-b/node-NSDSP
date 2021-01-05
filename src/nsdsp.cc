@@ -504,7 +504,7 @@ Napi::Value Read(const Napi::CallbackInfo & info) {
     
     NSDSP_CONN_HANDLE handle = *info[0].As<Napi::Buffer<NSDSP_CONN_HANDLE>>().Data();
     
-    Napi::Uint8Array arr = info[0].As<Napi::Uint8Array>();
+    Napi::Uint8Array arr = info[1].As<Napi::Uint8Array>();
     char* metadataValue = reinterpret_cast<char*>(arr.ArrayBuffer().Data()); 
     
     unsigned int size = info[2].As<Napi::Number>();
