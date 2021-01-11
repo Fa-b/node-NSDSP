@@ -49,7 +49,9 @@ let analyzer = function(key, buffer) {
     let T2OUTPS = ((buffer[3] & 0x78) >> 3) + 1;
     let PR2 = buffer[4] + 1;
     let timeslot = T2OUTPS * T2CKPS * PR2 * (1 / 12) 
-    console.log("%s: 12 MHz / %d (Prescale 1:%d, Postscale 1:%d, Iterations %d, Timeslot %d us); unknown flags: 0x%s 0x%s", key, buffer.readUInt16LE(1) + 1, T2CKPS, T2OUTPS, PR2, timeslot.toFixed(3), buffer[5].toString(16), buffer[6].toString(16));
+    //console.log("%s: 12 MHz / %d (Prescale 1:%d, Postscale 1:%d, Iterations %d, Timeslot %d us); unknown flags: 0x%s 0x%s", key, buffer.readUInt16LE(1) + 1, T2CKPS, T2OUTPS, PR2, timeslot.toFixed(3), buffer[5].toString(16), buffer[6].toString(16));
+
+    return timeslot;
 }
 
 function NSDSP(serial, options, openCallback) {
@@ -137,8 +139,8 @@ function NSDSP(serial, options, openCallback) {
                 this._settings[6] = (this._settings[6] === 0)?1:this._settings[6];
             }
 
-            /*console.log(this._settings);
-            analyzer(this.bit_rate, this._settings);*/
+            //console.log(this._settings);
+            this._slottime = analyzer(this.bit_rate, this._settings);
         };
     }(this.settings.mode, this.settings.flowcontrol);
 
@@ -384,7 +386,23 @@ NSDSP.prototype.delay = function(delay) {
         throw new Error('Port is not open');
     }
 
-    return this.binding.WriteSPI(this.handle, delay)?true:false;
+    return this.binding.Delay(this.handle, delay)?true:false;
+}
+
+NSDSP.prototype.delay_us = function(delay) {
+    if (!this.isOpen) {
+        throw new Error('Port is not open');
+    }
+    
+    return this.binding.Delay(this.handle, Math.ceil(delay / this._Mode._slottime))?true:false;
+}
+
+NSDSP.prototype.delay_ms = function(delay) {
+    if (!this.isOpen) {
+        throw new Error('Port is not open');
+    }
+
+    return this.binding.Delay(this.handle, Math.ceil(delay * 1000 / this._Mode._slottime))?true:false;
 }
 
 NSDSP.prototype.flush = function() {
