@@ -30,7 +30,7 @@ const Commands = Object.freeze({
     ICSP_C0_D0: 0x18,
     ICSP_C0_D1: 0x19,
     ICSP_C1_D0: 0x1A,
-    ICSP_C1_D0: 0x1B,
+    ICSP_C1_D1: 0x1B,
     WAIT_ICSPDAT: 0x22,
     ICSP_SPI: 0x1C,
     MCLR_LOW: 0x01,
