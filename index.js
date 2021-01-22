@@ -41,7 +41,17 @@ const Commands = Object.freeze({
     DELAY_1: 0x03,
     DELAY_2: 0x04,
     DELAY_3: 0x05,
-    ECHO: 0x1D
+    ECHO: 0x1D,
+    HIDDEN_ICSP_CLK_ONCE: 0x06,
+    HIDDEN_DUNNO_WITH_WORD: 0x0E,
+    HIDDEN_SEND_COMMAND: 0x27,
+    HIDDEN_SEND_COMMAND_WITH_WORD: 0x28,
+    HIDDEN_WRITE_WORD: 0x2A,
+    HIDDEN_READ_WORD: 0x2C,
+    HIDDEN_INC_PC: 0x2E,
+    HIDDEN_WRITE_4_WORDS: 0x2F,
+    HIDDEN_READ_4_WORDS: 0x31,
+
 });
 
 let analyzer = function(key, buffer) {
