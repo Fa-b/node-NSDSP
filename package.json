@@ -1,5 +1,7 @@
 {
     "name": "node-NSDSP",
+    "version": "1.0.0",
+    "description": "Program PIC microcontrollers",
     "main": "index.js",
     "dependencies": {
         "node-addon-api": "^1.1.0",
