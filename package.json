@@ -1,4 +1,5 @@
 {
+    "name": "node-NSDSP",
     "main": "index.js",
     "dependencies": {
         "node-addon-api": "^1.1.0",
