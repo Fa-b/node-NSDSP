@@ -19,10 +19,9 @@ Napi::Value Enumerate(const Napi::CallbackInfo & info) {
         return env.Null();
     }
     
-    Napi::Uint8Array arr = info[0].As<Napi::Uint8Array>();
-    NSDSP_ENUM_DATA* metadataValue = reinterpret_cast<NSDSP_ENUM_DATA*>(arr.ArrayBuffer().Data()); 
+    NSDSP_ENUM_DATA* buffer = info[0].As<Napi::Buffer<NSDSP_ENUM_DATA>>().Data();
 
-    return Napi::Number::New(env, NSDSPEnumerate(metadataValue));
+    return Napi::Number::New(env, NSDSPEnumerate(buffer));
 }
 
 Napi::Value Connect(const Napi::CallbackInfo & info) {
@@ -504,12 +503,11 @@ Napi::Value Read(const Napi::CallbackInfo & info) {
     
     NSDSP_CONN_HANDLE handle = *info[0].As<Napi::Buffer<NSDSP_CONN_HANDLE>>().Data();
     
-    Napi::Uint8Array arr = info[1].As<Napi::Uint8Array>();
-    char* metadataValue = reinterpret_cast<char*>(arr.ArrayBuffer().Data()); 
+    char* buffer = info[1].As<Napi::Buffer<char>>().Data();
     
     unsigned int size = info[2].As<Napi::Number>();
     
-    return Napi::Number::New(env, NSDSPRead(handle, metadataValue, size));
+    return Napi::Number::New(env, NSDSPRead(handle, buffer, size));
 }
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports) {
